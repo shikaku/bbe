@@ -1,21 +1,28 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import App from 'src/components/App'
-import { actions as appActions } from 'src/services/app'
+import AppLoader from 'src/containers/AppLoader'
+import { actions as app } from 'src/services/app'
 
 const mapStateToProps = (state) => ({
-  appState: state.app_state,
+  appState: state.app.state,
 })
 
 class AppContainer extends Component {
   constructor(props) {
     super(props);
-    props.dispatch(appActions.init());
+    const { dispatch } = props;
+    dispatch(app.loadInitialData());
   }
   render() {
-    const { children, appState } = this.props;
-    return appState === 'loaded' ? children : null
+    return (
+      <App>
+        <AppLoader />
+        {this.props.appState === 'loaded' && this.props.children}
+      </App>
+    )
   }
 }
 
-export default connect(mapStateToProps)(AppContainer)
+export default withRouter(connect(mapStateToProps)(AppContainer))

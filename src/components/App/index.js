@@ -1,6 +1,6 @@
 import React from 'react'
-import './style.css'
 import 'bootstrap/dist/css/bootstrap-reboot'
 import 'bootstrap/dist/css/bootstrap'
+import './style.css'
 
 export default (props) => props.children;

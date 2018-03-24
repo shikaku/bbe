@@ -6,7 +6,7 @@ import thunk from 'redux-thunk'
 import createStore from './store'
 import reducer from './reducer'
 import Routes from './routes'
-import App from 'src/components/App'
+import App from 'src/containers/App'
 import './style.css'
 
 const store = createStore(reducer, thunk);
