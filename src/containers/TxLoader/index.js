@@ -3,15 +3,15 @@ import { connect } from 'react-redux'
 import { actions } from 'src/services/tx'
 
 const mapStateToProps = (state) => ({
-  txMap: state.tx_map,
+  txByHash: state.tx_by_hash,
 });
 
 class TxLoader extends Component {
   constructor(props) {
     super(props);
-    let { id, txMap } = props;
-    if (!txMap[id]) {
-      props.dispatch(actions.fetch(id));
+    let { hash, txByHash } = props;
+    if (!txByHash[hash]) {
+      props.dispatch(actions.loadTxByHash(hash));
     }
   }
   render() {

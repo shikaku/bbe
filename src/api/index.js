@@ -5,9 +5,9 @@ const request = (() => {
   return path => fetch(`${url}${path}?cors=true`)
 })();
 
-export const getTx = (hash) => request(`/rawtx/${hash}`);
+export const getTxByHash = (hash) => request(`/rawtx/${hash}`);
 
-export const getTxList = (hashes) => Promise.all(hashes.map(hash => request(`/rawtx/${hash}`)))
+export const getTxByHashes = (hashes) => Promise.all(hashes.map(hash => request(`/rawtx/${hash}`)))
 
 export const getBlockByHeight = (height) => request(`/rawblock/${height}`);
 

@@ -1,7 +1,7 @@
 import { routerReducer } from 'react-router-redux'
 import { reducer as txReducer, actions as txActions } from 'src/services/tx'
 import { reducer as blockReducer, actions as blockActions } from 'src/services/block'
-import { getLastBlockHeight, getBlockByHeight, getTxList } from 'src/api'
+import { getLastBlockHeight, getBlockByHeight, getTxByHashes } from 'src/api'
 
 const consts = {
   LOAD_INITIAL_DATA: 'APP:LOAD_INITIAL_DATA',
@@ -22,7 +22,7 @@ const actions = {
       while(tx.length < 10, blockIdx++) {
         tx = tx.concat(blocks[blockIdx].tx.map(({hash}) => hash));
       }
-      return getTxList(tx.slice(0,10));
+      return getTxByHashes(tx.slice(0,10));
     })
 
     Promise.all([

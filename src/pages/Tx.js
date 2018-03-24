@@ -7,7 +7,7 @@ const PageWithTxHash = withRouter(({ match }) => {
   const { txId } = match.params;
   return (
     <Page title={'Transaction page'}>
-      <TxInfo id={txId} />
+      <TxInfo hash={txId} />
     </Page>
   )
 })
