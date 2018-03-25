@@ -1,9 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import Blocks from 'src/components/Blocks'
+import BlockList from 'src/components/BlockList'
+import { getLastTenBlocks } from 'src/services/app/selectors'
 
 const mapStateToProps = (state, {count}) => ({
-  // blocks: state.blocks.slice(0, count),
+  blocks: getLastTenBlocks(state)
 })
 
-export default connect(mapStateToProps)(Blocks);
+export default connect(mapStateToProps)(BlockList);

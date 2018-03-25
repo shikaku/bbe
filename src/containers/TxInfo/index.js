@@ -3,12 +3,14 @@ import { connect } from 'react-redux'
 import TxInfo from 'src/components/TxInfo'
 import TxLoader from 'src/containers/TxLoader'
 
-const mapStateToProps = (state, {hash}) => ({ data: state.tx_by_hash[hash] });
+const mapStateToProps = (state, {hash}) => ({
+  tx: state.getIn(['tx_by_hash', hash]),
+});
 
-const TxInfoContainer = ({hash, data}) => (
+const TxInfoContainer = ({hash, tx}) => (
   <div>
-    { data
-      ? <TxInfo {...data} />
+    { tx
+      ? <TxInfo {...tx} />
       : (
         <div>
           <TxLoader hash={hash} />

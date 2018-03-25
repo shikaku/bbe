@@ -1,3 +1,4 @@
+import { fromJS, Map, merge } from 'immutable'
 import { getTxByHash } from 'src/api'
 
 const consts = {
@@ -21,27 +22,21 @@ const actions = {
   loadTxByHashError: (hash, error) => ({type: consts.LOAD_TX_BY_HASH_ERROR, hash, error}),
 };
 
-const reducer = (state = {}, action) => {
+const reducer = (state = Map(), action) => {
   switch (action.type) {
     case consts.SET_TX_BY_HASH:
       const { tx, hashes } = action;
-      return hashes.reduce((obj, hash, idx) => {
-        obj[hash] = tx[idx];
-        return obj;
-      }, {...state})
+      return state.merge(
+        fromJS(hashes.reduce((obj, hash, idx) => {
+          obj[hash] = tx[idx];
+          return obj;
+        }, {}))
+      )
     case consts.LOAD_TX_BY_HASH_SUCCESS:
-      console.log(action);
-      return {
-        ...state,
-        [action.hash]: action.tx,
-      }
+      return state.set(action.hash, fromJS(action.tx));
     default:
       return state;
   }
 }
 
-export {
-  consts,
-  actions,
-  reducer,
-}
+export { consts, actions, reducer }

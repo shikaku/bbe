@@ -6,7 +6,7 @@ import AppLoader from 'src/containers/AppLoader'
 import { actions as app } from 'src/services/app'
 
 const mapStateToProps = (state) => ({
-  appState: state.app.state,
+  appState: state.getIn(['app', 'state']),
 })
 
 class AppContainer extends Component {

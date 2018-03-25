@@ -1,4 +1,6 @@
-import { routerReducer } from 'react-router-redux'
+import { fromJS } from 'immutable'
+import { LOCATION_CHANGE } from 'react-router-redux'
+import { selectors } from './selectors'
 import { reducer as txReducer, actions as txActions } from 'src/services/tx'
 import { reducer as blockReducer, actions as blockActions } from 'src/services/block'
 import { getLastBlockHeight, getBlockByHeight, getTxByHashes } from 'src/api'
@@ -14,7 +16,7 @@ const actions = {
     dispatch({type: consts.LOAD_INITIAL_DATA});
     const lastBlockHeightPromise = getLastBlockHeight();
     const tenLastBlocksPromise = lastBlockHeightPromise.then(height => {
-      return Promise.all([0,1,2,3,4,5,6,7,8,9].map(n => getBlockByHeight(height - n)))
+      return Promise.all([...Array(10).keys()].map(n => getBlockByHeight(height - n)))
     });
     const tenLastTxPromise = tenLastBlocksPromise.then(blocks => {
       let tx = [];
@@ -31,7 +33,7 @@ const actions = {
       tenLastTxPromise,
     ])
       .then(([lastBlockHeight, blockList, txList]) => {
-        dispatch(blockActions.setBlocksByHeight(blockList, blockList.map(v => v.height)))
+        dispatch(blockActions.setBlocksByHeight(blockList, blockList.map(v => v.block_index)))
         dispatch(txActions.setTxByHash(txList, txList.map(v => v.hash)))
         dispatch(actions.loadInitialDataSuccess(lastBlockHeight))
       })
@@ -44,61 +46,49 @@ const actions = {
 
 };
 
-const initialState = {
+const initialState = fromJS({
   app: {
     state: 'notloaded',
     error: '',
   },
   last_block_height: null,
-};
+  routing: {
+    locationBeforeTransitions: undefined,
+  },
+});
 
 const reducer = (state = initialState, action) => {
-  const newState = {
-    ...state,
-    router: routerReducer(state.router, action),
-    tx_by_hash: txReducer(state.tx_by_hash, action),
-    block_by_height: blockReducer(state.block_by_height, action),
-  };
+  let newState = state
+    .set('tx_by_hash', txReducer(state.get('tx_by_hash'), action))
+    .set('block_by_height', blockReducer(state.get('block_by_height'), action));
 
   switch (action.type) {
+    case LOCATION_CHANGE:
+      return (
+        newState.mergeDeep({routing: {locationBeforeTransitions: action.payload}})
+      )
     case consts.LOAD_INITIAL_DATA:
       return (
-        Object.assign(newState, {
-          app: {
-            ...state.app,
-            state: 'loading',
-            error: '',
-          },
-        })
+        newState
+          .setIn(['app', 'state'], 'loading')
+          .setIn(['app', 'error'], '')
       )
     case consts.LOAD_INITIAL_DATA_SUCCESS:
       return (
-        Object.assign(newState, {
-          last_block_height: action.lastBlockHeight,
-          app: {
-            ...state.app,
-            state: 'loaded',
-            error: '',
-          },
-        })
+        newState
+          .setIn(['app', 'state'], 'loaded')
+          .setIn(['app', 'error'], '')
+          .set('last_block_height', action.lastBlockHeight)
       )
     case consts.LOAD_INITIAL_DATA_ERROR:
       return (
-        Object.assign(newState, {
-          app: {
-            ...state.app,
-            state: 'error',
-            error: action.error,
-          },
-        })
+          newState
+          .setIn(['app', 'state'], 'error')
+          .setIn(['app', 'error'], action.error)
       )
     default:
       return newState;
   }
 }
 
-export {
-  consts,
-  actions,
-  reducer,
-}
+export { consts, actions, reducer, selectors }
